@@ -24,14 +24,20 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 
 ;;funcall, apply, reduce
 
+(defvar *n* '(2 3 4 5))
 (setf *n* '(2 3 4 5))
 (* 2 3 4 5)
 (funcall #'* 2 3 4 5)
 (apply #'* *n*)
 (apply #'* (remove-if #'oddp *n*))
+(reduce #'list *n*)
+(reduce #'list (remove-if #'oddp *n*))
+(expt (expt (expt 2 3) 4) 5) ;((2^3)^4)^5
+(expt 2 (* 3 4 5))
 (reduce #'expt *n*)
-(reduce #'expt (remove-if #'oddp *n*))
+(reduce #'list (remove-if #'oddp *n*))
 
+(defvar *o* (list 1 (/ 1 3) (/ 1 4) (/ 1 5)))
 (setf *o* (list 1 (/ 1 3) (/ 1 4) (/ 1 5)))
 (append *n* *o*)
 (reduce #'expt (append *n*
@@ -111,14 +117,17 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
                 str))
         *l*)
 
-
-;;; roswell + quicklisp + ASDF
-
-(asdf:load-asd "~/projects/cl-mlp/cl-mlp.asd")
-(ql:quickload :cl-mlp)
-(bing:get-botbuilder-url '("session" "end"))
-
 ;;; Macro
+
+;;xor
+
+(xor a b c d)
+(and (or a b c d) ;at least 1 t
+     (not (and a b c d))) ;not all t
+
+(defmacro xor (&rest tests)
+  `(and (or ,@tests)
+        (not (and ,@tests))))
 
 ;;do-primes
 (defun primep (number)
@@ -148,21 +157,16 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
          ((> ,var ,end))
        ,@body)))
 
-;;xor
-
-(xor a b c d)
-(and (or a b c d) ;at least 1 t
-     (not (and a b c d))) ;not all t
-
-(defmacro xor (&rest tests)
-  `(and (or ,@tests)
-        (not (and ,@tests))))
-
 
 ;;;create new controll structure by macro
+;;let 3 players take turns to dice to achieve different target of sum.
 
-(defun rush (p)
-  (incf p (random 6)))
+(defvar *p0* 0)
+(incf *p0* 3)
+
+(defmacro rush (p)
+  `(incf ,@p (random 6)))
+
 
 (defun player-report (player status)
   (format t "player ~a go to ~a.~%" player status))
@@ -218,6 +222,13 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
                     20)
                 (player-report "p1" p1)
                 (winner-report "p1" p1))))
+
+
+;;; roswell + quicklisp + ASDF
+
+(asdf:load-asd "~/projects/cl-mlp/cl-mlp.asd")
+(ql:quickload :cl-mlp)
+(bing:get-botbuilder-url '("session" "end"))
 
 ;;list-if
 
