@@ -138,21 +138,28 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 (and (or a b c d) ;at least 1 t
      (not (and a b c d))) ;not all t
 
-(defun fn-xor0 (&rest tests)
-  "function xor defined by eval & cons."
-  (and (eval (cons 'or tests))
-       (not (eval (cons 'and tests)))))
-
-(defun fn-xor1 (&rest tests)
-  "function xor defined by macro-apply."
-  (and (macro-apply or tests)
-       (not (macro-apply and tests))))
-  
 (defmacro macro-xor (&rest tests)
   `(and (or ,@tests)
         (not (and ,@tests))))
 
+(defun fn-xor0 (&rest tests)
+  "function xor defined by eval & cons."
+  (let ((truths (mapcar #'(lambda (test)
+                            (not (not test)))
+                        tests)))
+    (and (eval (cons 'or truths))
+         (not (eval (cons 'and truths))))))
+
+(defun fn-xor1 (&rest tests)
+  "function xor defined by macro-apply."
+    (let ((truths (mapcar #'(lambda (test)
+                            (not (not test)))
+                        tests)))
+      (and (macro-apply or truths)
+           (not (macro-apply and truths)))))
+
 ;;do-primes
+
 (defun primep (number)
   (when (> number 1)
     (loop for fac from 2 to (isqrt number) never (zerop (mod number fac)))))
@@ -180,8 +187,7 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
          ((> ,var ,end))
        ,@body)))
 
-
-;;;create new controll structure by macro
+;; circular-if
 ;;let 3 players take turns to dice to achieve different target of sum.
 
 (defvar *p0* 0)
