@@ -117,7 +117,20 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
                 str))
         *l*)
 
+
 ;;; Macro
+
+(defmacro macro-apply (mac args-list)
+  "only works when input to arg-list is dynamic variable or direct '(....)"
+  (let ((the-list (eval args-list)))
+    `(eval (,mac ,@the-list))))
+
+(defmacro macro-apply (mac args-list)
+  "an APPLY for macros."
+  `(eval (cons (quote ,mac) ,args-list)))
+
+(macro-apply a-macro a-list)
+(eval (cons (quote a-macro) a-list))
 
 ;;xor
 
@@ -125,7 +138,17 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 (and (or a b c d) ;at least 1 t
      (not (and a b c d))) ;not all t
 
-(defmacro xor (&rest tests)
+(defun fn-xor0 (&rest tests)
+  "function xor defined by eval & cons."
+  (and (eval (cons 'or tests))
+       (not (eval (cons 'and tests)))))
+
+(defun fn-xor1 (&rest tests)
+  "function xor defined by macro-apply."
+  (and (macro-apply or tests)
+       (not (macro-apply and tests))))
+  
+(defmacro macro-xor (&rest tests)
   `(and (or ,@tests)
         (not (and ,@tests))))
 
