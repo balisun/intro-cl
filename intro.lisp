@@ -8,8 +8,12 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
            (* 2 b)
            (- (/ c
                  3
-                 (+ d e)))
-           (* f (- g (/ h i)))))
+                 (+ d
+                    e)))
+           (* f
+              (- g
+                 (/ h
+                    i)))))
 
 ;; take a look at cl-mlp code-frame.lisp think
 
@@ -31,9 +35,9 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 (apply #'* *n*)
 (apply #'* (remove-if #'oddp *n*))
 (reduce #'list *n*)
-(reduce #'list (remove-if #'oddp *n*))
 (expt (expt (expt 2 3) 4) 5) ;((2^3)^4)^5
 (expt 2 (* 3 4 5))
+(reduce #'list (remove-if #'oddp *n*))
 (reduce #'expt *n*)
 (reduce #'list (remove-if #'oddp *n*))
 
@@ -81,7 +85,7 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 (defun new-hello-fns (&rest names)
   (mapcar #'(lambda (name)
             (eval (gen-hello name)))
-        names))
+          names))
 
 (mapcar #'eval (mapcar #'(lambda (name)
                           `(defun ,(intern (format nil "get-out-~a" name)) () ,(format nil "get out ~a!!" name)))
@@ -95,42 +99,9 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
 (defvar *l2* '(a b c))
 (list *l1* *l2* (zigzag *l1* *l2*))
 
-;;;lambda- concatenate "AGI" if meet condition
-
-(setf *l* '("libgirl"
-            "LIBGIRL"
-            "Libgirl"
-            "LibGirl"))
-
-(substitute-if "AGI"
-               #'stringp
-               *l*)
-
-(substitute-if "AGI"
-               #'(lambda (str)
-                   (equal str "libgirl"))
-               *l*)
-
-(mapcar #'(lambda (str)
-            (if (search str "libgirl")
-                (format nil "~a makes AGI!" str)
-                str))
-        *l*)
-
 
 ;;; Macro
 
-(defmacro macro-apply (mac args-list)
-  "only works when input to arg-list is dynamic variable or direct '(....)"
-  (let ((the-list (eval args-list)))
-    `(eval (,mac ,@the-list))))
-
-(defmacro macro-apply (mac args-list)
-  "an APPLY for macros."
-  `(eval (cons (quote ,mac) ,args-list)))
-
-(macro-apply a-macro a-list)
-(eval (cons (quote a-macro) a-list))
 
 ;;xor
 
@@ -254,6 +225,44 @@ x = ( a + ( b * 2 ) - ( c / 3 / ( d + e ) ) + f * ( g - ( h / i ) ) )
                     14)
                 (player-report "p1" p1)
                 (winner-report "p1" p1))))
+
+;; Macro Apply
+(defmacro macro-apply (mac args-list)
+  "only works when input to arg-list is dynamic variable or direct '(....)"
+  (let ((the-list (eval args-list)))
+    `(eval (,mac ,@the-list))))
+
+(defmacro macro-apply (mac args-list)
+  "an APPLY for macros."
+  `(eval (cons (quote ,mac) ,args-list)))
+
+(macro-apply a-macro a-list)
+(eval (cons (quote a-macro) a-list))
+
+
+
+;;;lambda- concatenate "AGI" if meet condition
+
+(setf *l* '("libgirl"
+            "LIBGIRL"
+            "Libgirl"
+            "LibGirl"))
+
+(substitute-if "AGI"
+               #'stringp
+               *l*)
+
+(substitute-if "AGI"
+               #'(lambda (str)
+                   (equal str "libgirl"))
+               *l*)
+
+(mapcar #'(lambda (str)
+            (if (search str "libgirl")
+                (format nil "~a makes AGI!" str)
+                str))
+        *l*)
+
 
 
 ;;; roswell + quicklisp + ASDF
